@@ -1,19 +1,5 @@
 
-function validateForm()
-{
-    let candyName = document.getElementById("candyName").value;
-    let description = document.getElementById("description").value;
-    let price = document.getElementById("price").value;
-    let avalability = document.getElementById("avalability").value;
-
-    if(candyName=="" || description=="" || price=="" || avalability=="")
-    {
-        alert("Please enter all the details")
-        return false;
-    }
-    return true;
-}
-
+let url = "https://crudcrud.com/api/a439a0537cbf40aea04ebcf5375ad848/candies";
 function clearFields()
 {
     document.getElementById("candyName").value="";
@@ -22,105 +8,117 @@ function clearFields()
     document.getElementById("avalability").value="";
 }
 
-function showData(callback)
-{
-    let chocoList = JSON.parse(localStorage.getItem("chocoList"));
+document.getElementById("submit").addEventListener("click", addData);
 
+//Load all data when page is reloaded
+document.onload = showData();
+
+async function addData()
+{
+    let candyName = document.getElementById("candyName").value;
+    let description = document.getElementById("description").value;
+    let price = document.getElementById("price").value;
+    let avalability = document.getElementById("avalability").value;
+ 
+    let candyList = { candyName: candyName, description: description, price: price, avalability: avalability };
+
+    try{
+        await axios.post(url, candyList)
+        .then(function(){
+            showData();
+        })
+        .then(function(){
+            clearFields();
+        });
+    }
+    catch(err)
+    {
+        console.log(err);
+    }
+
+} 
+
+async function showData()
+{
+    let res = await axios.get(url);
+    const candyList = res.data;
+    //console.log(candyList);
     let html = "";
-    chocoList.forEach((element,index) => {
+    candyList.forEach((element,index) => {
         html+="<tr>";
         html+="<td>"+element.candyName+"</td>";   
         html+="<td>"+element.description+"</td>";   
         html+="<td>"+element.price+"</td>";   
         html+="<td>"+element.avalability+"</td>";
-        
         html+= '<td><button onclick="buy1('+index+
-            ')" class="btn btn-primary">Buy1</button><button onclick="buy2('+index+
-            ')" class="btn btn-primary m-2">Buy2</button><button onclick="buy3('+index+
-            ')" class="btn btn-primary m-2">Buy3</button></td>';
-        html+="</tr>";
+        ')" class="btn btn-primary">Buy1</button><button onclick="buy2('+index+
+        ')" class="btn btn-primary m-2">Buy2</button><button onclick="buy3('+index+
+        ')" class="btn btn-primary m-2">Buy3</button></td>';
+    html+="</tr>";
     });
-
     document.querySelector("#crudTable tbody").innerHTML = html;
-    callback();
-    //console.log("show working");
 }
 
-//Load all data when page is reloaded
-document.onload = showData(clearFields);
-
-function addData(callback)
+async function buy1(index)
 {
-    if(validateForm()==true)
-    {
-        let candyName = document.getElementById("candyName").value;
-        let description = document.getElementById("description").value;
-        let price = document.getElementById("price").value;
-        let avalability = document.getElementById("avalability").value;
- 
-        let chocoList;
-        if(localStorage.getItem("chocoList")==null)
-        {
-            chocoList = [];
-        }
-        else
-        {
-            chocoList = JSON.parse(localStorage.getItem("chocoList"));
-        }
-
-        chocoList.push({candyName:candyName, description:description, price:price, avalability:avalability});
-        localStorage.setItem("chocoList", JSON.stringify(chocoList));
-        // callback();
-        // clearFields();
-        if(callback)
-        {
-            callback();
-        }
-        //console.log("Add working");
-    }
-} 
-
-function buy1(index)
-{
-    let chocoList = JSON.parse(localStorage.getItem("chocoList"));
-    let ca = Number(chocoList[index].avalability);
+    let res = await axios.get(url);
+    const candyList = res.data;
+    let i = candyList[index]._id;
+    let ca = Number(candyList[index].avalability);
     if(ca<1)
     {
         alert("Sorry, Candy is not available");
         return;
     }
-    chocoList[index].avalability = ca-1;
-    localStorage.setItem("chocoList", JSON.stringify(chocoList));
-    showData(clearFields);
-    //console.log("Buy 1 works")
+    //console.log("Current Availability= "+ca);
+    let ul = { candyName: candyList[index].candyName, description: candyList[index].description, price: candyList[index].price, avalability: ca-1 };
+    
+    await axios.put(url+"/"+i, ul)
+    .then(function(){
+        showData();
+    })
+    
 }
-
-function buy2(index)
+async function buy2(index)
 {
-    let chocoList = JSON.parse(localStorage.getItem("chocoList"));
-    let ca = Number(chocoList[index].avalability);
+    let res = await axios.get(url);
+    const candyList = res.data;
+    let i = candyList[index]._id;
+    let ca = Number(candyList[index].avalability);
     if(ca<2)
     {
         alert("Sorry, Candy is not available");
         return;
     }
-    chocoList[index].avalability = ca-2;
-    localStorage.setItem("chocoList", JSON.stringify(chocoList));
-    showData(clearFields);
+    //console.log("Current Availability= "+ca);
+    let ul = { candyName: candyList[index].candyName, description: candyList[index].description, price: candyList[index].price, avalability: ca-2 };
+    
+    await axios.put(url+"/"+i, ul)
+    .then(function(){
+        showData();
+    })
+    
     //console.log("Buy 2 works")
 }
-
-function buy3(index)
+async function buy3(index)
 {
-    let chocoList = JSON.parse(localStorage.getItem("chocoList"));
-    let ca = Number(chocoList[index].avalability);
-    if(ca<3)
+    let res = await axios.get(url);
+    const candyList = res.data;
+    let i = candyList[index]._id;
+    let ca = Number(candyList[index].avalability);
+    if(ca<1)
     {
         alert("Sorry, Candy is not available");
         return;
     }
-    chocoList[index].avalability = ca-3;
-    localStorage.setItem("chocoList", JSON.stringify(chocoList));
-    showData(clearFields);
+    //console.log("Current Availability= "+ca);
+    let ul = { candyName: candyList[index].candyName, description: candyList[index].description, price: candyList[index].price, avalability: ca-3 };
+    
+    await axios.put(url+"/"+i, ul)
+    .then(function(){
+        showData();
+    })
+    
     //console.log("Buy 3 works")
 }
+
