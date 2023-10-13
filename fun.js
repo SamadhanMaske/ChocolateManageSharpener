@@ -22,11 +22,9 @@ function clearFields()
     document.getElementById("avalability").value="";
 }
 
-function showData()
+function showData(callback)
 {
     let chocoList = JSON.parse(localStorage.getItem("chocoList"));
-
-    console.log(chocoList);
 
     let html = "";
     chocoList.forEach((element,index) => {
@@ -44,12 +42,14 @@ function showData()
     });
 
     document.querySelector("#crudTable tbody").innerHTML = html;
+    callback();
+    //console.log("show working");
 }
 
 //Load all data when page is reloaded
-document.onload = showData();
+document.onload = showData(clearFields);
 
-function addData()
+function addData(callback)
 {
     if(validateForm()==true)
     {
@@ -70,9 +70,13 @@ function addData()
 
         chocoList.push({candyName:candyName, description:description, price:price, avalability:avalability});
         localStorage.setItem("chocoList", JSON.stringify(chocoList));
-        showData();
-        clearFields();
-        console.log("Add working");
+        // callback();
+        // clearFields();
+        if(callback)
+        {
+            callback();
+        }
+        //console.log("Add working");
     }
 } 
 
@@ -87,8 +91,8 @@ function buy1(index)
     }
     chocoList[index].avalability = ca-1;
     localStorage.setItem("chocoList", JSON.stringify(chocoList));
-    showData();
-    console.log("Buy 1 works")
+    showData(clearFields);
+    //console.log("Buy 1 works")
 }
 
 function buy2(index)
@@ -102,8 +106,8 @@ function buy2(index)
     }
     chocoList[index].avalability = ca-2;
     localStorage.setItem("chocoList", JSON.stringify(chocoList));
-    showData();
-    console.log("Buy 2 works")
+    showData(clearFields);
+    //console.log("Buy 2 works")
 }
 
 function buy3(index)
@@ -117,6 +121,6 @@ function buy3(index)
     }
     chocoList[index].avalability = ca-3;
     localStorage.setItem("chocoList", JSON.stringify(chocoList));
-    showData();
+    showData(clearFields);
     //console.log("Buy 3 works")
 }

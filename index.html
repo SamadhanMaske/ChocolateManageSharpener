@@ -52,7 +52,7 @@
           <input type="number" name="avalability" class="form-control" id="avalability" placeholder="Enter avalability">
         </div>
         <div class="col-lg-12 mt-2">
-          <button class="btn btn-success" id="submit" onclick="addData()">Add</button>
+          <button class="btn btn-success" id="submit" onclick="addData(()=>showData(clearFields))">Add Candy</button>
         </div>
       </div>
     </div>
@@ -67,7 +67,7 @@
               <th scope="col">Description</th>
               <th scope="col">Price</th>
               <th scope="col">Avalability</th>
-              <th scope="col" colspan="2">Buying Options</th>
+              <th scope="col">Buying Options</th>
             </tr>
           </thead>
           <tbody>
